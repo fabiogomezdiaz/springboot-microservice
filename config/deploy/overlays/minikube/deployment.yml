@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-microservice
+spec:
+  template:
+    metadata:
+      annotations:
+        dapr.io/enabled: "true"
+        dapr.io/app-id: "springboot-microservice"
+        dapr.io/app-port: "8080"
+        # dapr.io/config: "tracing"
+    spec:
+      containers:
+      - name: springboot-microservice
+        image: "minikube/springboot-microservice:latest"
+        imagePullPolicy: "Never"

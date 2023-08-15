@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-microservice
+  labels:
+    app: springboot-microservice
+    release: springboot-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-microservice
+      release: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+        release: springboot-microservice
+      annotations:
+        dapr.io/enabled: "false"
+        dapr.io/app-id: springboot-microservice
+        dapr.io/app-port: "8080"
+        # dapr.io/config: tracing
+    spec:
+      imagePullSecrets:
+        - name: artifactory
+      containers:
+        - name: springboot-microservice
+          image: "$DOCKER_REGISTRY/springboot-microservice:$DEPLOY_TAG"
+          imagePullPolicy: "Always"
+          command: ["java"]
+          args: ["$(JAVA_OPTS)", "-jar", "./app.jar"]
+          volumeMounts:
+            - mountPath: /spring-tmp
+              name: spring-tmp
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 35
+            periodSeconds: 20
+            failureThreshold: 6
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              memory: 512Mi
+              cpu: "0.5"
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+          env:
+            - name: JAVA_OPTS
+              value: "-Djava.io.tmpdir=/spring-tmp"
+            - name: SERVER_PORT
+              value: "8080"
+      volumes:
+        - name: spring-tmp
+          emptyDir:
+            medium: "Memory"
