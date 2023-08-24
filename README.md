@@ -112,8 +112,8 @@ To do so, run the following command based on your shell:
 
 ```bash
 # Set docker env
-eval $(minikube docker-env)             # Unix Shells
-minikube docker-env | Invoke-Expression # PowerShell
+eval $(minikube -p minikube docker-env)             # Unix Shells
+minikube -p minikube docker-env | Invoke-Expression # PowerShell
 ```
 
 Now, in the same shell, run any of the following commands:
