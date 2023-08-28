@@ -8,47 +8,40 @@ ENV BUILD_DIR=/home/build
 RUN mkdir $BUILD_DIR
 WORKDIR $BUILD_DIR
 
-# Copy Source Code
+# Download project dependencies
+# This is optimized to only download dependencies if the pom.xml changes
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copy Source Code and Build the project
 COPY src src
-
-# Skip Tests
-ARG SKIP_TESTS=true
-
-# Build JAR
-RUN mvn package -Dmaven.test.skip=${SKIP_TESTS}
-
-# Rename JAR
-RUN PROJECT_NAME="$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.artifactId -q -DforceStdout)" && \
-    PROJECT_VERSION="$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout)" && \
-    export PROJECT_NAME && \
-    export PROJECT_VERSION && \
-    mv "${BUILD_DIR}/target/${PROJECT_NAME}-${PROJECT_VERSION}.jar" "${BUILD_DIR}/target/app.jar"
+RUN mvn package -Dmaven.test.skip=true && \
+    mv target/*-SNAPSHOT.jar target/app.jar
 
 #
 # Deploy stage
 #
 FROM openjdk:11-jre-slim-buster
 
-# Non-Root User
-ENV USERNAME=appuser
-ENV GROUP=$USERNAME
-ENV USER_UID=1001
-ENV USER_GID=$USER_UID
+# Set Environment Variables for Deploy
+ENV USERNAME=appuser \
+    GROUP=appuser \
+    USER_UID=1001 \
+    USER_GID=1001 \
+    APP_HOME=/home/app
 
-# Create app directory
-ENV APP_HOME=/home/app
-RUN mkdir -p $APP_HOME
-RUN addgroup --gid $USER_GID $GROUP && \
-    adduser --uid $USER_UID --gid $USER_GID $USERNAME
+# Setup Non-Root environment and Copy JAR
+RUN mkdir -p $APP_HOME && \
+    addgroup --gid $USER_GID $GROUP && \
+    adduser --uid $USER_UID --gid $USER_GID $USERNAME && \
+    chown -R $USER_UID:$USER_GID $APP_HOME
+
 WORKDIR $APP_HOME
-
-# Copy JAR file over from builder stage
-COPY --from=builder --chown=$USER_UID:$USER_GID /home/build/target/app.jar $APP_HOME
+COPY --from=builder --chown=$USER_UID:$USER_GID /home/build/target/app.jar ./
 RUN chmod 700 app.jar
 
+# Switch to Non-root user and Expose Port
 USER $USERNAME
-
 EXPOSE 8080
 
 CMD ["java", "-jar", "./app.jar"]
