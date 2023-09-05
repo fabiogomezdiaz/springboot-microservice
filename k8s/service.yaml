@@ -15,4 +15,4 @@ spec:
   selector:
     app: springboot-microservice
     release: springboot-microservice
-  type: ClusterIP
+  type: NodePort
