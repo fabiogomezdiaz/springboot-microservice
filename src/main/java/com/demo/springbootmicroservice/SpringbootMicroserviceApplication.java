@@ -2,6 +2,7 @@ package com.demo.springbootmicroservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -11,7 +12,6 @@ import java.net.UnknownHostException;
 
 @SpringBootApplication
 public class SpringbootMicroserviceApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(SpringbootMicroserviceApplication.class, args);
     }
@@ -20,7 +20,7 @@ public class SpringbootMicroserviceApplication {
 @RestController
 class HelloWorldController {
 
-    @GetMapping("/helloworld")
+    @GetMapping(value = "/helloworld", produces = MediaType.APPLICATION_JSON_VALUE)
     public String helloWorld() {
         String hostname = System.getenv("HOSTNAME");
         String ipAddress = "Unknown";
@@ -43,11 +43,9 @@ class HelloWorldController {
             environment = "Kubernetes";
         }
 
-        return String.format("<html><body>" +
-                             "Hello, World!<br>" +
-                             "Running in: %s<br>" +
-                             "From Host: %s<br>" +
-                             "IP Address: %s" +
-                             "</body></html>", environment, hostname, ipAddress);
+        return String.format(
+            "{\"message\": \"Hello, World!\", \"environment\": \"%s\", \"host\": \"%s\", \"ipAddress\": \"%s\"}",
+            environment, hostname, ipAddress
+        );
     }
 }
