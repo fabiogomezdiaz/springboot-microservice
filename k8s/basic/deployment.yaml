@@ -3,20 +3,16 @@ kind: Deployment
 metadata:
   labels:
     app: springboot-microservice
-    release: springboot-microservice
   name: springboot-microservice
-  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: springboot-microservice
-      release: springboot-microservice
   template:
     metadata:
       labels:
         app: springboot-microservice
-        release: springboot-microservice
     spec:
       containers:
       - args:
@@ -30,7 +26,7 @@ spec:
           value: -Djava.io.tmpdir=/spring-tmp
         - name: SERVER_PORT
           value: "8080"
-        image: minikube/springboot-microservice:latest
+        image: springboot-microservice:maven
         imagePullPolicy: Never
         livenessProbe:
           failureThreshold: 6

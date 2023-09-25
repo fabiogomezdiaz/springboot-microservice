@@ -1,5 +1,6 @@
 package com.demo.springbootmicroservice;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.http.MediaType;
@@ -19,6 +20,12 @@ public class SpringbootMicroserviceApplication {
 
 @RestController
 class HelloWorldController {
+
+    @Value("${app.greeting:Default Greeting from Spring Boot!}")
+    private String greeting;
+
+    @Value("${app.api.key:DefaultAPIKey}")
+    private String apiKey;
 
     @GetMapping(value = "/helloworld", produces = MediaType.APPLICATION_JSON_VALUE)
     public String helloWorld() {
@@ -44,8 +51,8 @@ class HelloWorldController {
         }
 
         return String.format(
-            "{\"message\": \"Hello, World!\", \"environment\": \"%s\", \"host\": \"%s\", \"ipAddress\": \"%s\"}",
-            environment, hostname, ipAddress
+            "{\"message\": \"%s\", \"apiKey\": \"%s\", \"environment\": \"%s\", \"host\": \"%s\", \"ipAddress\": \"%s\"}",
+            greeting, apiKey, environment, hostname, ipAddress
         );
     }
 }
