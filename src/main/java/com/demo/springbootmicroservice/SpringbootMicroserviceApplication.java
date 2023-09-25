@@ -50,9 +50,15 @@ class HelloWorldController {
             environment = "Kubernetes";
         }
 
+        long maxMemory = Runtime.getRuntime().maxMemory(); // equivalent to -Xmx value
+        long totalMemory = Runtime.getRuntime().totalMemory(); // equivalent to -Xms value
+
+        String maxMemoryMB = String.format("%.2f MB", maxMemory / (float) (1024 * 1024));
+        String totalMemoryMB = String.format("%.2f MB", totalMemory / (float) (1024 * 1024));
+
         return String.format(
-            "{\"message\": \"%s\", \"apiKey\": \"%s\", \"environment\": \"%s\", \"host\": \"%s\", \"ipAddress\": \"%s\"}",
-            greeting, apiKey, environment, hostname, ipAddress
+            "{\"message\": \"%s\", \"apiKey\": \"%s\", \"environment\": \"%s\", \"host\": \"%s\", \"ipAddress\": \"%s\", \"maxMemory\": \"%s\", \"totalMemory\": \"%s\"}",
+            greeting, apiKey, environment, hostname, ipAddress, maxMemoryMB, totalMemoryMB
         );
     }
 }
