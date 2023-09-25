@@ -4,5 +4,5 @@ metadata:
   name: springboot-microservice-config
 data:
   application.properties: |
-    app.greeting=Hello from Kubernetes!
-    app.api.key=SomeAPIKeyFromKubernetes
+    app.greeting=Hello from Kubernetes ConfigMap!
+    app.api.key=SomeAPIKeyFromKubernetesConfigMap
