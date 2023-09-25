@@ -91,3 +91,11 @@ maven-docker-shell:
 maven-docker-stop:
 	@echo "Stopping Docker container"
 	@docker stop $(APP_NAME)-maven
+
+##########
+# Docker #
+##########
+
+docker-clean:
+	@echo "Cleaning Docker images and containers"
+	@docker system prune -a --volumes
