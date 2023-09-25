@@ -16,14 +16,12 @@ spec:
     spec:
       containers:
       - args:
-        - $(JAVA_OPTS)
+        - -Djava.io.tmpdir=/spring-tmp
         - -jar
         - ./app.jar
         command:
         - java
         env:
-        - name: JAVA_OPTS
-          value: -Djava.io.tmpdir=/spring-tmp
         - name: SERVER_PORT
           value: "8080"
         image: springboot-microservice:maven
