@@ -36,6 +36,7 @@ RUN mkdir -p $APP_HOME && \
     adduser --uid $USER_UID --gid $USER_GID $USERNAME && \
     chown -R $USER_UID:$USER_GID $APP_HOME
 
+# Create app home directory and copy the JAR from the builder stage
 WORKDIR $APP_HOME
 COPY --from=builder --chown=$USER_UID:$USER_GID /home/build/target/app.jar ./
 RUN chmod 700 app.jar
