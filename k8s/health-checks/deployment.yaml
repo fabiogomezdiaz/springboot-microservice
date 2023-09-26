@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: springboot-microservice
+  name: springboot-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      containers:
+      - args:
+        - -jar
+        - ./app.jar
+        command:
+        - java
+        image: springboot-microservice:maven
+        imagePullPolicy: Never
+        name: springboot-microservice
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:  # 1. Readiness Probe Configuration
+            httpGet:
+              path: /actuator/health  # 2. Path to the health endpoint provided by Actuator
+              port: 8080  # 3. Port on which the application is exposed
+            initialDelaySeconds: 20  # 4. Number of seconds after the container starts to begin the probe
+            periodSeconds: 10  # 5. How often to perform the probe
+            failureThreshold: 6  # 6. Number of times the probe must fail for the pod to be marked Unready
+        livenessProbe:  # 7. Liveness Probe Configuration
+            httpGet:
+              path: /actuator/health  # 8. Path to the health endpoint provided by Actuator
+              port: 8080  # 9. Port on which the application is exposed
+            initialDelaySeconds: 35  # 10. Number of seconds after the container starts to begin the probe
+            periodSeconds: 20  # 11. How often to perform the probe
+            failureThreshold: 6  # 12. Number of times the probe must fail for the pod to be restarted
