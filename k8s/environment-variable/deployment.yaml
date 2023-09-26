@@ -4,7 +4,6 @@ metadata:
   labels:
     app: springboot-microservice
   name: springboot-microservice
-  namespace: default
 spec:
   replicas: 1
   selector:
@@ -17,62 +16,21 @@ spec:
     spec:
       containers:
       - args:
-        - -Djava.io.tmpdir=/spring-tmp
         - -jar
         - ./app.jar
-        - --spring.config.location=file:///config/application.properties,file:///secret/application.properties
         command:
         - java
         env:
-        - name: SERVER_PORT
-          value: "8080"
         - name: APP_GREETING # This is the environment variable recognized by Spring Boot
           value: "Hello from Kubernetes Environment Variable!"
+        - name: APP_API_KEY # This is the environment variable recognized by Spring Boot
+          valueFrom:
+            secretKeyRef:
+              key: api-key
+              name: springboot-microservice-secret
         image: springboot-microservice:maven
         imagePullPolicy: Never
-        livenessProbe:
-          failureThreshold: 6
-          httpGet:
-            path: /actuator/health
-            port: 8080
-          initialDelaySeconds: 35
-          periodSeconds: 20
         name: springboot-microservice
         ports:
         - containerPort: 8080
           protocol: TCP
-        readinessProbe:
-          failureThreshold: 6
-          httpGet:
-            path: /actuator/health
-            port: 8080
-          initialDelaySeconds: 20
-          periodSeconds: 10
-        resources:
-          limits:
-            memory: 512Mi  # Adjusted to be more than 2x the -Xmx value
-          requests:
-            cpu: "0.5"
-            memory: 320Mi  # Adjusted to be more than the -Xms value
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-        volumeMounts:
-        - mountPath: /spring-tmp
-          name: spring-tmp
-        - mountPath: /config
-          name: config-volume
-        - mountPath: /secret
-          name: secret-volume
-      imagePullSecrets:
-      - name: artifactory
-      volumes:
-      - emptyDir:
-          medium: Memory
-        name: spring-tmp
-      - name: config-volume
-        configMap:
-          name: springboot-microservice-config
-      - name: secret-volume
-        secret:
-          secretName: springboot-microservice-secret
