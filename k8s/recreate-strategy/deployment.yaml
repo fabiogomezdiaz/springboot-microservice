@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: springboot-microservice
+  name: springboot-microservice
+spec:
+  replicas: 1  # 1. Even with one replica, the service will experience downtime during the update
+  strategy:  # 2. Deployment strategy block
+    type: Recreate  # 3. Specifies the strategy type as Recreate
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      containers:
+      - args:
+        - -jar
+        - ./app.jar
+        command:
+        - java
+        env:
+        - name: APP_GREETING
+          value: "Hello from Recreate Strategy!"
+        image: springboot-microservice:maven
+        imagePullPolicy: Never
+        name: springboot-microservice
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+        livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 35
+            periodSeconds: 20
+            failureThreshold: 6

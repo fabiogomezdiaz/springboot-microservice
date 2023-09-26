@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: springboot-microservice
+  name: springboot-microservice
+spec:
+  replicas: 3  # 1. Having multiple replicas ensures availability during the update
+  strategy:  # 2. Deployment strategy block
+    type: RollingUpdate  # 3. Specifies the strategy type as RollingUpdate
+    rollingUpdate:  # 4. Configuration specific to the RollingUpdate strategy
+      maxSurge: 1  # 5. Specifies the maximum number of pods added during the update
+      maxUnavailable: 1  # 6. Specifies the maximum number of pods unavailable during the update
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      containers:
+      - args:
+        - -jar
+        - ./app.jar
+        command:
+        - java
+        env:
+        - name: APP_GREETING
+          value: "Hello from Rolling Update Strategy!"
+        image: springboot-microservice:maven
+        imagePullPolicy: Never
+        name: springboot-microservice
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            failureThreshold: 6
+        livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 35
+            periodSeconds: 20
+            failureThreshold: 6
