@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - args:
-        - -Xmx256m  # Maximum Heap Size
-        - -Xms128m  # Initial Heap Size
+        - -Xmx256m  #1 Setting Maximum Heap Size
+        - -Xms128m  #2 Setting Initial Heap Size
         - -jar
         - ./app.jar
         command:
@@ -31,9 +31,9 @@ spec:
         ports:
         - containerPort: 8080
           protocol: TCP
-        resources:
+        resources:  #3 Configuring Kubernetes Resource Requests and Limits
           limits:
-            memory: 512Mi  # Adjusted to be more than 2x the -Xmx value
+            memory: 512Mi  #4 Limiting maximum memory, should be more than 2x the -Xmx value
           requests:
             cpu: "0.5"
-            memory: 320Mi  # Adjusted to be more than the -Xms value
+            memory: 320Mi  #5 Requesting initial memory, should be more than the -Xms value
