@@ -20,14 +20,14 @@ spec:
         - ./app.jar
         command:
         - java
-        env:
-        - name: APP_GREETING # This is the environment variable recognized by Spring Boot
+        env:  #1 Environment variables for the container
+        - name: APP_GREETING  #2a Directly setting an environment variable
           value: "Hello from Kubernetes Environment Variable!"
-        - name: APP_API_KEY # This is the environment variable recognized by Spring Boot
-          valueFrom:
-            secretKeyRef:
-              key: api-key
-              name: springboot-microservice-secret
+        - name: APP_API_KEY  #2b Setting an environment variable from a Secret
+          valueFrom:  #3 Indicates the value is sourced from another object
+            secretKeyRef:  #4 Reference to a key within a Secret
+              key: api-key  #5 The key within the Secret containing the desired value
+              name: springboot-microservice-secret  #6 The name of the Secret
         image: springboot-microservice:maven
         imagePullPolicy: Never
         name: springboot-microservice
