@@ -78,6 +78,7 @@ maven-docker-run:
 	@echo "Running Docker image"
 	@docker stop $(APP_NAME)-maven || true
 	@docker run --rm --name $(APP_NAME)-maven -p 8080:8080 -d $(APP_NAME):maven
+	@docker run --rm --name springboot-microservice-maven -p 8080:8080 -d springboot-microservice:maven
 	@echo "Docker image running"
 
 maven-docker-logs:
