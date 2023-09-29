@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-microservice
+  labels:
+    app: springboot-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      securityContext:  # 1. Pod-Level Security Context
+        runAsNonRoot: true  # 2. Ensures the container is not running as root user
+        runAsUser: 1001  # 3. Define the user to run the container
+        fsGroup: 2000  # 4. Define the group owning the volume
+      containers:
+      - args:
+        - "-Djava.io.tmpdir=/spring-tmp"
+        - -jar
+        - ./app.jar
+        command:
+        - java
+        name: springboot-microservice
+        image: springboot-microservice:maven
+        imagePullPolicy: Never  # 5. Always pull the image to ensure it's the latest
+        securityContext:  # 6. Container-Level Security Context
+          allowPrivilegeEscalation: false  # 7. Disallow privilege escalation
+          readOnlyRootFilesystem: true  # 8. Read-only root filesystem to avoid alterations
+        resources:  # 9. Limit resources
+          limits:
+            memory: "256Mi"
+          requests:
+            memory: "256Mi"  # 10. Match memory requests to limits to prevent overcommitting
+            cpu: "500m"  # 11. Leave CPU uncapped to handle temporary usage spikes
+        livenessProbe:  # 12. Liveness Probe Configuration
+          httpGet:
+            path: /actuator/health
+            port: 8080
+        readinessProbe:  # 13. Readiness Probe Configuration
+          httpGet:
+            path: /actuator/health
+            port: 8080
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - mountPath: /spring-tmp
+            name: spring-tmp
+      volumes:  # 14. Volume Configuration
+        - name: spring-tmp
+          emptyDir:
+            medium: "Memory"  # 15. Memory-Based EmptyDir Volume
