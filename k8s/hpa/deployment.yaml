@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: springboot-microservice
+  name: springboot-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      containers:
+      - args:
+        - -Xmx256m  #1 Setting Maximum Heap Size
+        - -Xms128m  #2 Setting Initial Heap Size
+        - -jar
+        - ./app.jar
+        command:
+        - java
+        env:
+        - name: APP_GREETING
+          value: "Hello from JVM!"
+        image: springboot-microservice:maven
+        imagePullPolicy: Never
+        name: springboot-microservice
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:  #3 Configuring Kubernetes Resource Requests and Limits
+          limits:
+            memory: 512Mi  #4 Limiting maximum memory, should be more than 2x the -Xmx value
+          requests:
+            cpu: "0.5"
+            memory: 320Mi  #5 Requesting initial memory, should be more than the -Xms value
