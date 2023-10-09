@@ -106,4 +106,4 @@ docker-clean:
 ################
 load-test:
 	@echo "Running Apache Bench"
-	@ab -n 1000 -c 10 http://localhost:8080/helloworld
+	@ab -n 1000000 -c 100 http://localhost:8080/helloworld
