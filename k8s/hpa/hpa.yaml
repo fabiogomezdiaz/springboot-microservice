@@ -8,5 +8,5 @@ spec:
     kind: Deployment
     name: springboot-microservice
   minReplicas: 2
-  maxReplicas: 10
+  maxReplicas: 3
   targetCPUUtilizationPercentage: 80
