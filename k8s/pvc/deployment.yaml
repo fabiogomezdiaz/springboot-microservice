@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: springboot-microservice
+  name: springboot-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      containers:
+      - args:
+        - -jar
+        - ./app.jar
+        command:
+        - java
+        image: springboot-microservice:maven
+        imagePullPolicy: Never
+        name: springboot-microservice
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        volumeMounts:
+        - name: springboot-storage
+          mountPath: /data
+      volumes:
+      - name: springboot-storage
+        persistentVolumeClaim:
+          claimName: springboot-pvc
