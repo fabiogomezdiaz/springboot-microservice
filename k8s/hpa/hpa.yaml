@@ -16,3 +16,20 @@ spec:
         averageUtilization: 15
         type: Utilization
     type: Resource
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 10
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
