@@ -3,7 +3,7 @@ kind: StatefulSet
 metadata:
   name: springboot-microservice
 spec:
-  serviceName: springboot-service
+  serviceName: springboot-microservice
   replicas: 3
   selector:
     matchLabels:
