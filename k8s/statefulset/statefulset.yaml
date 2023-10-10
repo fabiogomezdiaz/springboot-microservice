@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: springboot-microservice
+spec:
+  serviceName: springboot-service
+  replicas: 3
+  selector:
+    matchLabels:
+      app: springboot-microservice
+  template:
+    metadata:
+      labels:
+        app: springboot-microservice
+    spec:
+      containers:
+      - name: springboot-microservice
+        image: springboot-microservice:maven
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: springboot-storage
+          mountPath: /data
+      volumes:
+      - name: springboot-storage
+        persistentVolumeClaim:
+          claimName: springboot-pvc
