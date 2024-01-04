@@ -1,0 +1,42 @@
+load("@rules_java//java:defs.bzl", "java_binary", "java_library")
+
+# Java Library to compile the source files
+java_library(
+    name = "springboot_microservice_lib",
+    srcs = glob(["src/main/java/**/*.java"]),
+    resources = glob(["src/main/resources/**"]),
+    deps = [
+        "@maven//:org_springframework_boot_spring_boot_starter_actuator",
+        "@maven//:org_springframework_boot_spring_boot_starter_web",
+        "@maven//:org_projectlombok_lombok",
+
+        # Extra dependencies that I was forced to add
+        "@maven//:org_springframework_boot_spring_boot",
+        "@maven//:org_springframework_boot_spring_boot_autoconfigure",
+        "@maven//:org_springframework_spring_beans",
+        "@maven//:org_springframework_spring_web",
+    ],
+)
+
+# Java library for unit tests
+java_library(
+    name = "springboot_microservice_test",
+    srcs = glob(["src/test/java/**/*.java"]),
+    resources = glob(["src/test/resources/**"]),
+    deps = [
+        "@maven//:org_springframework_boot_spring_boot_starter_test",
+        ":springboot_microservice_lib",
+        # Add more test dependencies here as needed
+    ],
+    testonly = 1,
+)
+
+
+# Java binary that includes all the runtime dependencies
+java_binary(
+    name = "springboot_microservice",
+    main_class = "com.demo.springbootmicroservice.SpringbootMicroserviceApplication",  # Replace with your main class
+    runtime_deps = [
+        ":springboot_microservice_lib",
+    ],
+)

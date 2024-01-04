@@ -22,6 +22,34 @@ clean:
 	@rm -rf build target
 	@echo "Build directory cleaned."
 
+#########
+# Bazel #
+#########
+
+bazel:
+	@echo "Building $(APP_NAME)..."
+	@bazel build //:springboot_microservice --java_runtime_version=remotejdk_11
+	@echo "Build completed."
+
+bazel-clean:
+	@echo "Cleaning Bazel cache..."
+	@bazel clean --expunge
+	@echo "Bazel cache cleaned."
+
+bazel-lib:
+	@echo "Building $(APP_NAME)..."
+	@bazel build //:springboot_microservice_lib --java_runtime_version=remotejdk_11
+	@echo "Build completed."
+
+bazel-test:
+	@echo "Testing $(APP_NAME)..."
+	@bazel test //:springboot_microservice_test --java_runtime_version=remotejdk_11
+	@echo "Test completed."
+
+bazel-run:
+	@echo "Running $(APP_NAME)..."
+	@bazel run //:springboot_microservice --java_runtime_version=remotejdk_11
+
 ##########
 # Gradle #
 ##########

@@ -52,3 +52,9 @@ target/
 
 # Ignore settings.xml
 settings.xml
+
+# Bazel
+bazel-bin/
+bazel-out/
+bazel-testlogs/
+bazel-*
