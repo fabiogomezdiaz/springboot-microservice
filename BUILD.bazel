@@ -25,6 +25,8 @@ java_library(
     resources = glob(["src/test/resources/**"]),
     deps = [
         "@maven//:org_springframework_boot_spring_boot_starter_test",
+        "@maven//:org_junit_jupiter_junit_jupiter_api",
+        "@maven//:org_springframework_boot_spring_boot_test",
         ":springboot_microservice_lib",
         # Add more test dependencies here as needed
     ],
